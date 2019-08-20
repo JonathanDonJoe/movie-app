@@ -12,16 +12,32 @@ router.get('/', function(req, res, next) {
 router.post('/registerProcess', (req, res) => {
   const {username, email, password, password2} = req.body;
 
-  const insertUserQuery = `
-  INSERT INTO users (username, email, password)
-  VALUES
-    ($1, $2, $3)
-  RETURNING id
+  const checkUserExistsQuery = `
+  SELECT * FROM users WHERE username = $1 OR email = $2
   `
-  db.one(insertUserQuery, [username, email, password]).then( resp => {
-    res.json({
-      msg: "useradded"
-    })
+
+  db.any(checkUserExistsQuery, [username, email]).then( resp => {
+    if (resp.length > 0) {
+      // This user already exists
+      res.redirect('/login?msg=userexists')
+    } else {
+      // This is a new user.  Insert
+      insertUser()
+    }
   })
+
+  function insertUser() {
+    const insertUserQuery = `
+    INSERT INTO users (username, email, password)
+    VALUES
+    ($1, $2, $3)
+    RETURNING id
+    `
+    db.one(insertUserQuery, [username, email, password]).then( resp => {
+      res.json({
+        msg: "useradded"
+      })
+    })
+  }
 });
-module.exports = router;
+  module.exports = router;
