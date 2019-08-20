@@ -1,3 +1,18 @@
 .poster img {
   max-width:100%;
 }
+
+/* html {
+  background: lavender;
+} */
+.container {
+  border-radius: 100px;
+  background: linear-gradient(to bottom, rgb(216, 237, 255), lavender, rgb(216, 237, 255));
+  height: 80vh;
+  padding: 50px;
+}
+
+body {
+  background: lightblue;
+  padding: 100px;
+}

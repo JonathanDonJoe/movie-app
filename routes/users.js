@@ -14,7 +14,7 @@ router.post('/registerProcess', (req, res) => {
   const {username, email, password, password2} = req.body;
 
   const checkUserExistsQuery = `
-  SELECT * FROM users WHERE username = $1 OR email = $2
+    SELECT * FROM users WHERE username = $1 OR email = $2
   `;
 
   db.any(checkUserExistsQuery, [username, email]).then( resp => {
@@ -29,10 +29,10 @@ router.post('/registerProcess', (req, res) => {
 
   function insertUser() {
     const insertUserQuery = `
-    INSERT INTO users (username, email, password)
-    VALUES
-    ($1, $2, $3)
-    RETURNING id
+      INSERT INTO users (username, email, password)
+      VALUES
+      ($1, $2, $3)
+      RETURNING id
     `;
     const hash = bcrypt.hashSync(password, 10);
     db.one(insertUserQuery, [username, email, hash]).then( resp => {
@@ -42,4 +42,19 @@ router.post('/registerProcess', (req, res) => {
     })
   }
 });
-  module.exports = router;
+
+router.post('/loginProcess', (req, res) => {
+  // res.json(req.body);
+  const checkUserQuery = `
+    SELECT * FROM users WHERE username=$1
+  `;
+  db.one(checkUserQuery, [req.body.username]).then( resp => {
+    res.json(resp);
+  }).catch( err => {
+    res.json({
+      msg: "userDoesNotExist"
+    });
+  });
+});
+
+module.exports = router;
