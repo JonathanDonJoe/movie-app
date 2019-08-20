@@ -49,7 +49,14 @@ router.post('/loginProcess', (req, res) => {
     SELECT * FROM users WHERE username=$1
   `;
   db.one(checkUserQuery, [req.body.username]).then( resp => {
-    res.json(resp);
+    // res.json(resp);
+    const correctPass = bcrypt.compareSync(req.body.password, resp.password);
+    console.log(correctPass);
+    if (correctPass) {
+      res.json('Logged in');
+    } else {
+      res.redirect('/login?msg=badPass');
+    }
   }).catch( err => {
     res.json({
       msg: "userDoesNotExist"
