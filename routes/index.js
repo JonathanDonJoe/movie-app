@@ -11,9 +11,11 @@ router.get('/', function(req, res, next) {
   // console.log(nowPlayingUrl);
   // request.get takes 2 args: 1. URL to get 2. the callback to run when req is fulfilled
   request.get(nowPlayingUrl, (error, response, movieData) => {
-    console.log(movieData);
+    const parsedData = JSON.parse(movieData);
+    console.log(parsedData);
+    res.render('index', { parsedData: parsedData.results });
   })
-  res.render('index', { title: 'Express' });
+  // res.render('index', { title: 'Express' });
 });
 
 module.exports = router;

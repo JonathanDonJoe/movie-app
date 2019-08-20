@@ -1,7 +1,17 @@
 <% include head %>
 
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+  	<body>
+    	<div class="container">
+      		<div class="row">
+				  	<div class="col col-12">
+						<h1>Movies Now Playing</h1>
+						<% parsedData.forEach((movie, i) => { %>
+							<div class="col col-3 poster">
+								<%= movie.title %>
+							</div>
+						<%}) %>
+					</div>
+      		</div>
+    	</div>
+  	</body>
 </html>
