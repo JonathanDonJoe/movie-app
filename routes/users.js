@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const db = require('../db');
+const bcrypt = require('bcrypt');
 
 
 /* GET users listing. */
@@ -14,17 +15,17 @@ router.post('/registerProcess', (req, res) => {
 
   const checkUserExistsQuery = `
   SELECT * FROM users WHERE username = $1 OR email = $2
-  `
+  `;
 
   db.any(checkUserExistsQuery, [username, email]).then( resp => {
     if (resp.length > 0) {
       // This user already exists
-      res.redirect('/login?msg=userexists')
+      res.redirect('/login?msg=userexists');
     } else {
       // This is a new user.  Insert
-      insertUser()
+      insertUser();
     }
-  })
+  });
 
   function insertUser() {
     const insertUserQuery = `
@@ -32,10 +33,11 @@ router.post('/registerProcess', (req, res) => {
     VALUES
     ($1, $2, $3)
     RETURNING id
-    `
-    db.one(insertUserQuery, [username, email, password]).then( resp => {
+    `;
+    const hash = bcrypt.hashSync(password, 10);
+    db.one(insertUserQuery, [username, email, hash]).then( resp => {
       res.json({
-        msg: "useradded"
+        msg: resp
       })
     })
   }
