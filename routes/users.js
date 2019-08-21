@@ -2,7 +2,16 @@ var express = require('express');
 var router = express.Router();
 const db = require('../db');
 const bcrypt = require('bcrypt');
+const expressSession = require('express-session');
 
+///////THIS SHOULD BE IN .env FOLDER////////
+const sessionOptions = {
+  secret: "oinsdvjnxpqidmfs",
+  resave: false,
+  saveUninitialized: false
+}
+
+router.use(expressSession(sessionOptions));
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -53,7 +62,10 @@ router.post('/loginProcess', (req, res) => {
     const correctPass = bcrypt.compareSync(req.body.password, resp.password);
     console.log(correctPass);
     if (correctPass) {
-      res.json('Logged in');
+      req.session.username = resp.username;
+      req.session.loggedin = true;
+      req.session.email = resp.email;
+      res.redirect('/');
     } else {
       res.redirect('/login?msg=badPass');
     }
